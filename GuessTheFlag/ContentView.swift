@@ -78,8 +78,10 @@ struct ContentView: View {
 		if number == correctAnswer {
 			scoreTitle = "You got it 😄"
 		} else {
-			scoreTitle = "That's not it 😵"
+			scoreTitle = "Oops! 😵"
 		}
+		
+		scoreTitle += "\nThat's the flag for " + countries[number]
 		
 		showingScore = true
 	}
