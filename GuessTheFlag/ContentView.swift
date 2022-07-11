@@ -12,7 +12,7 @@ struct ContentView: View {
 	@State private var score = 0
 	@State private var round = 0
 	
-	@State private var buttonsEnabled = [true, true, true]
+	@State private var flagsEnabled = [true, true, true]
 	@State private var gameIsOver = false
 	
 	@State var alertItem : AlertItem?
@@ -35,6 +35,10 @@ struct ContentView: View {
 					.foregroundColor(.white)
 				
 				Text("Score: \(score)")
+					.foregroundColor(.white)
+					.font(.title.bold())
+				
+				Text("Round: \(round)")
 					.foregroundColor(.white)
 					.font(.title.bold())
 				
@@ -63,7 +67,7 @@ struct ContentView: View {
 										.stroke(.white, lineWidth: 4)
 								)
 						}
-						.disabled(!buttonsEnabled[number])
+						.disabled(!flagsEnabled[number])
 					}
 				}
 				.frame(maxWidth: .infinity)
@@ -93,7 +97,7 @@ struct ContentView: View {
 				score += 1
 			} else {
 				scoreTitle = "Oops! 😵"
-				buttonsEnabled[number] = false
+				flagsEnabled[number] = false
 			}
 			
 			scoreTitle += "\nThat's the flag for \(countries[number])"
@@ -118,7 +122,7 @@ struct ContentView: View {
 	func askQuestion() {
 		countries.shuffle()
 		correctAnswer = Int.random(in: 0...2)
-		buttonsEnabled = [true, true, true]
+		flagsEnabled = [true, true, true]
 	}
 	
 	func generateGameOverAlert(title: String) -> AlertItem {
