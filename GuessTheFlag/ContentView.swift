@@ -11,6 +11,8 @@ struct ContentView: View {
 	@State private var showingScore = false
 	@State private var scoreTitle = ""
 	@State private var scoreTotal = 0
+	@State private var gamesPlayed = 0
+	@State var alertItem : AlertItem?
 	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "the UK", "the US"]
 		.shuffled()
 	@State private var correctAnswer = Int.random(in: 0...2)
@@ -68,11 +70,13 @@ struct ContentView: View {
 			}
 			.padding()
 		}
-		.alert(scoreTitle, isPresented: $showingScore) {
-			Button("Continue", action: askQuestion)
-		} message: {
-			Text("Your score is " + String(scoreTotal))
+		.alert(item: $alertItem) { alertItem in
+			guard let primaryButton = alertItem.primaryButton, let secondaryButton = alertItem.secondaryButton else{
+				return Alert(title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton)
+			}
+			return Alert(title: alertItem.title, message: alertItem.message, primaryButton: primaryButton, secondaryButton: secondaryButton)
 		}
+		
 	}
 	
 	func flagTapped(_ number: Int) {
@@ -86,6 +90,19 @@ struct ContentView: View {
 		scoreTitle += "\nThat's the flag for " + countries[number]
 		
 		showingScore = true
+		gamesPlayed += 1
+		
+		if gamesPlayed < 8 {
+			let alertMessage = Text("Your score is " + String(scoreTotal))
+			self.alertItem = AlertItem(title: Text(scoreTitle), message: alertMessage, primaryButton: .default(Text("Continue"), action: askQuestion), secondaryButton: .cancel())
+		} else {
+			let alertMessage = Text("Your final score is " + String(scoreTotal) + " of 8")
+			self.alertItem = AlertItem(title: Text(scoreTitle), message: alertMessage, primaryButton: .default(Text("Play again!"), action: {
+				scoreTotal = 0
+				gamesPlayed = 0
+				askQuestion()
+			}), secondaryButton: .cancel())
+		}
 	}
 	
 	func askQuestion() {
@@ -98,4 +115,13 @@ struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
 		ContentView()
 	}
+}
+
+struct AlertItem: Identifiable {
+	var id = UUID()
+	var title = Text("")
+	var message: Text?
+	var dismissButton: Alert.Button?
+	var primaryButton: Alert.Button?
+	var secondaryButton: Alert.Button?
 }
