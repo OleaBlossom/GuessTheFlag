@@ -11,7 +11,7 @@ struct ContentView: View {
 	@State private var showingScore = false
 	@State private var scoreTitle = ""
 	@State private var scoreTotal = 0
-	@State private var gamesPlayed = 0
+	@State private var round = 0
 	@State var alertItem : AlertItem?
 	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "the UK", "the US"]
 		.shuffled()
@@ -90,11 +90,11 @@ struct ContentView: View {
 		scoreTitle += "\nThat's the flag for " + countries[number]
 		
 		showingScore = true
-		gamesPlayed += 1
+		round += 1
 		
 		self.alertItem = AlertItem(title: Text(scoreTitle), secondaryButton: .cancel())
 		
-		if gamesPlayed < 8 {
+		if round < 8 {
 			alertItem!.message = Text("Your score is " + String(scoreTotal))
 			alertItem!.primaryButton = .default(Text("Continue"), action: askQuestion)
 		} else {
@@ -107,7 +107,7 @@ struct ContentView: View {
 	
 	func reset() {
 		scoreTotal = 0
-		gamesPlayed = 0
+		round = 0
 		askQuestion()
 	}
 	
