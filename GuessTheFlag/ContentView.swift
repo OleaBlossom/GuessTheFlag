@@ -8,30 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 20) {
-                Text("A1")
-                Text("B1")
-                Text("C1")
-            }
-            HStack(spacing: 20) {
-                Text("A2")
-                Text("B2")
-                Text("C2")
-
-            }
-            HStack(spacing: 20) {
-                Text("A3")
-                Text("B3")
-                Text("C3")
-            }
-        }
-    }
+	var body: some View {
+		ZStack() {
+			Color(red: 1, green: 0.8, blue: 1)
+				.frame(minWidth: 200, maxWidth: .infinity, maxHeight: 200)
+			Text("Your content")
+		}
+	}
 }
 
 struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+	static var previews: some View {
+		ContentView()
+	}
 }
