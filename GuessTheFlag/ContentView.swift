@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
 	@State private var showingScore = false
 	@State private var scoreTitle = ""
+	@State private var scoreTotal = 0
 	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "the UK", "the US"]
 		.shuffled()
 	@State private var correctAnswer = Int.random(in: 0...2)
@@ -27,7 +28,7 @@ struct ContentView: View {
 					.font(.largeTitle.bold())
 					.foregroundColor(.white)
 								
-				Text("Score: ???")
+				Text("Score: " + String(scoreTotal))
 					.foregroundColor(.white)
 					.font(.title.bold())
 				
@@ -70,13 +71,14 @@ struct ContentView: View {
 		.alert(scoreTitle, isPresented: $showingScore) {
 			Button("Continue", action: askQuestion)
 		} message: {
-			Text("Your score is ???")
+			Text("Your score is " + String(scoreTotal))
 		}
 	}
 	
 	func flagTapped(_ number: Int) {
 		if number == correctAnswer {
 			scoreTitle = "You got it 😄"
+			scoreTotal += 1
 		} else {
 			scoreTitle = "Oops! 😵"
 		}
