@@ -92,17 +92,23 @@ struct ContentView: View {
 		showingScore = true
 		gamesPlayed += 1
 		
+		self.alertItem = AlertItem(title: Text(scoreTitle), secondaryButton: .cancel())
+		
 		if gamesPlayed < 8 {
-			let alertMessage = Text("Your score is " + String(scoreTotal))
-			self.alertItem = AlertItem(title: Text(scoreTitle), message: alertMessage, primaryButton: .default(Text("Continue"), action: askQuestion), secondaryButton: .cancel())
+			alertItem!.message = Text("Your score is " + String(scoreTotal))
+			alertItem!.primaryButton = .default(Text("Continue"), action: askQuestion)
 		} else {
-			let alertMessage = Text("Your final score is " + String(scoreTotal) + " of 8")
-			self.alertItem = AlertItem(title: Text(scoreTitle), message: alertMessage, primaryButton: .default(Text("Play again!"), action: {
-				scoreTotal = 0
-				gamesPlayed = 0
-				askQuestion()
-			}), secondaryButton: .cancel())
+			alertItem!.message = Text("Your final score is " + String(scoreTotal) + " of 8")
+				.bold()
+			alertItem!.primaryButton = .default(Text("Play again!"), action: reset)
 		}
+		
+	}
+	
+	func reset() {
+		scoreTotal = 0
+		gamesPlayed = 0
+		askQuestion()
 	}
 	
 	func askQuestion() {
