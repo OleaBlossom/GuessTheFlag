@@ -11,10 +11,15 @@ struct ContentView: View {
 	@State private var scoreTitle = ""
 	@State private var score = 0
 	@State private var round = 0
+	
+	@State private var buttonsEnabled = [true, true, true]
+	@State private var gameIsOver = false
+	
 	@State var alertItem : AlertItem?
 	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "the UK", "the US"]
 		.shuffled()
 	@State private var correctAnswer = Int.random(in: 0...2)
+	
 	var body: some View {
 		ZStack {
 			RadialGradient(stops: [
@@ -28,7 +33,7 @@ struct ContentView: View {
 				Text("Guess the Flag")
 					.font(.largeTitle.bold())
 					.foregroundColor(.white)
-								
+				
 				Text("Score: \(score)")
 					.foregroundColor(.white)
 					.font(.title.bold())
@@ -58,6 +63,7 @@ struct ContentView: View {
 										.stroke(.white, lineWidth: 4)
 								)
 						}
+						.disabled(!buttonsEnabled[number])
 					}
 				}
 				.frame(maxWidth: .infinity)
@@ -70,8 +76,8 @@ struct ContentView: View {
 			.padding()
 		}
 		.alert(item: $alertItem) { alertItem in
-			guard let primaryButton = alertItem.primaryButton, let secondaryButton = alertItem.secondaryButton else{
-				return Alert(title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton)
+			guard let primaryButton = alertItem.primaryButton, let secondaryButton = alertItem.secondaryButton else {
+				return Alert(title: alertItem.title, message: alertItem.message, dismissButton: .default(Text("Next round!"), action: askQuestion))
 			}
 			return Alert(title: alertItem.title, message: alertItem.message, primaryButton: primaryButton, secondaryButton: secondaryButton)
 		}
@@ -79,38 +85,61 @@ struct ContentView: View {
 	}
 	
 	func flagTapped(_ number: Int) {
-		if number == correctAnswer {
-			scoreTitle = "You got it 😄"
-			score += 1
+		if gameIsOver {
+			self.alertItem = generateGameOverAlert(title: "Game Over!")
 		} else {
-			scoreTitle = "Oops! 😵"
+			if number == correctAnswer {
+				scoreTitle = "You got it 😄"
+				score += 1
+			} else {
+				scoreTitle = "Oops! 😵"
+				buttonsEnabled[number] = false
+			}
+			
+			scoreTitle += "\nThat's the flag for \(countries[number])"
+			round += 1
+			
+			if round < 8 {
+				self.alertItem = generateRoundOverAlert(title: scoreTitle, userWonRound: number == correctAnswer)
+			} else {
+				gameIsOver = true
+				self.alertItem = generateGameOverAlert(title: scoreTitle)
+			}
 		}
-		
-		scoreTitle += "\nThat's the flag for \(countries[number])"
-		round += 1
-		
-		self.alertItem = AlertItem(title: Text(scoreTitle), secondaryButton: .cancel())
-		
-		if round < 8 {
-			alertItem!.message = Text("Your score is \(score)")
-			alertItem!.primaryButton = .default(Text("Continue"), action: askQuestion)
-		} else {
-			alertItem!.message = Text("Your final score is \(score) of 8")
-				.bold()
-			alertItem!.primaryButton = .default(Text("Play again!"), action: reset)
-		}
-		
 	}
 	
 	func reset() {
 		score = 0
 		round = 0
+		gameIsOver = false
 		askQuestion()
 	}
 	
 	func askQuestion() {
 		countries.shuffle()
 		correctAnswer = Int.random(in: 0...2)
+		buttonsEnabled = [true, true, true]
+	}
+	
+	func generateGameOverAlert(title: String) -> AlertItem {
+		return AlertItem(
+			title: Text(title),
+			message: Text("Your final score is \(score) of \(round)"),
+			primaryButton: .default(Text("Play again!"), action: reset),
+			secondaryButton: .cancel())
+	}
+	
+	func generateRoundOverAlert(title: String, userWonRound: Bool) -> AlertItem {
+		var alertItem = AlertItem(
+			title: Text(scoreTitle),
+			message: Text("Your score is \(score)"),
+			primaryButton: .default(Text("Try a new country"), action: askQuestion))
+		
+		if (!userWonRound) {
+			alertItem.secondaryButton = .cancel(Text("Try this country again"))
+		}
+		
+		return alertItem
 	}
 }
 
