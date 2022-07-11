@@ -8,28 +8,56 @@
 import SwiftUI
 
 struct ContentView: View {
-	@State private var showingAlert = false
+	@State private var showingScore = false
+	@State private var scoreTitle = ""
+	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"]
+		.shuffled()
+	@State private var correctAnswer = Int.random(in: 0...2)
 	var body: some View {
 		ZStack {
-			AngularGradient(gradient: Gradient(colors: [.red, .yellow, .green, .blue, .purple, .red]), center: .center)
+			LinearGradient(gradient: Gradient(colors: [.blue, .white]), startPoint: .top, endPoint: .bottom)
+				.ignoresSafeArea()
 			
-			Button("Show Alert") {
-				showingAlert = true
-			}
-			.padding(.vertical, 16)
-			.padding(.horizontal, 32)
-			.background(.thickMaterial)
-			.cornerRadius(40)
-			.overlay(
-				Capsule(style: .circular)
-					.stroke(.white, lineWidth: 3)
-			)
-			.alert("Important message", isPresented: $showingAlert) {
-				Button("OK", role: .cancel) { }
-			} message: {
-				Text("Please read this!")
+			VStack(spacing: 30) {
+				VStack {
+					Text("Tap the flag of")
+						.font(.subheadline.weight(.heavy))
+						.foregroundColor(.white)
+					Text(countries[correctAnswer])
+						.font(.largeTitle.weight(.semibold))
+						.foregroundColor(.white)
+				}
+				
+				ForEach(0..<3) { number in
+					Button {
+						flagTapped(number)
+					} label: {
+						Image(countries[number])
+							.renderingMode(.original)
+					}
+				}
 			}
 		}
+		.alert(scoreTitle, isPresented: $showingScore) {
+			Button("Continue", action: askQuestion)
+		} message: {
+			Text("Your score is ???")
+		}
+	}
+	
+	func flagTapped(_ number: Int) {
+		if number == correctAnswer {
+			scoreTitle = "You got it 😄"
+		} else {
+			scoreTitle = "That's not it 😵"
+		}
+		
+		showingScore = true
+	}
+	
+	func askQuestion() {
+		countries.shuffle()
+		correctAnswer = Int.random(in: 0...2)
 	}
 }
 
