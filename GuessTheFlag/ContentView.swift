@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-	@State private var showingScore = false
 	@State private var scoreTitle = ""
-	@State private var scoreTotal = 0
+	@State private var score = 0
 	@State private var round = 0
 	@State var alertItem : AlertItem?
 	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "the UK", "the US"]
@@ -30,7 +29,7 @@ struct ContentView: View {
 					.font(.largeTitle.bold())
 					.foregroundColor(.white)
 								
-				Text("Score: " + String(scoreTotal))
+				Text("Score: \(score)")
 					.foregroundColor(.white)
 					.font(.title.bold())
 				
@@ -82,23 +81,21 @@ struct ContentView: View {
 	func flagTapped(_ number: Int) {
 		if number == correctAnswer {
 			scoreTitle = "You got it 😄"
-			scoreTotal += 1
+			score += 1
 		} else {
 			scoreTitle = "Oops! 😵"
 		}
 		
-		scoreTitle += "\nThat's the flag for " + countries[number]
-		
-		showingScore = true
+		scoreTitle += "\nThat's the flag for \(countries[number])"
 		round += 1
 		
 		self.alertItem = AlertItem(title: Text(scoreTitle), secondaryButton: .cancel())
 		
 		if round < 8 {
-			alertItem!.message = Text("Your score is " + String(scoreTotal))
+			alertItem!.message = Text("Your score is \(score)")
 			alertItem!.primaryButton = .default(Text("Continue"), action: askQuestion)
 		} else {
-			alertItem!.message = Text("Your final score is " + String(scoreTotal) + " of 8")
+			alertItem!.message = Text("Your final score is \(score) of 8")
 				.bold()
 			alertItem!.primaryButton = .default(Text("Play again!"), action: reset)
 		}
@@ -106,7 +103,7 @@ struct ContentView: View {
 	}
 	
 	func reset() {
-		scoreTotal = 0
+		score = 0
 		round = 0
 		askQuestion()
 	}
