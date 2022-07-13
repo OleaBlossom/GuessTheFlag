@@ -59,13 +59,7 @@ struct ContentView: View {
 						Button {
 							flagTapped(number)
 						} label: {
-							Image(countries[number])
-								.renderingMode(.original)
-								.clipShape(Capsule())
-								.overlay(
-									Capsule(style: .circular)
-										.stroke(.white, lineWidth: 4)
-								)
+							FlagImage(country: countries[number])
 						}
 						.disabled(!flagsEnabled[number])
 					}
@@ -160,4 +154,17 @@ struct AlertItem: Identifiable {
 	var dismissButton: Alert.Button?
 	var primaryButton: Alert.Button?
 	var secondaryButton: Alert.Button?
+}
+
+struct FlagImage: View {
+	let country: String
+	var body: some View {
+		Image(country)
+			.renderingMode(.original)
+			.clipShape(Capsule())
+			.overlay(
+				Capsule(style: .circular)
+					.stroke(.white, lineWidth: 4)
+			)
+	}
 }
